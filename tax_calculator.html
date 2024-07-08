@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KiwiCost - Tax Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+    </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F6F6F6;
+        }
+        header {
+            background-color: #163172;
+            padding: 1rem 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        header h1{
+            margin: 10px;
+        }
+        header a {
+            color: #D6E4F0;
+            text-decoration: none;
+            font-size: 2.6rem;
+        }
+        .merriweather-bold {
+            font-family: "Merriweather", serif;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 2.6rem;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .section {
+            background: #D6E4F0;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #163172;
+        }
+        .section form label {
+            color: #163172;
+        }
+        .section form {
+            display: flex;
+            flex-direction: column;
+        }
+        .section form input, .section form button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .results p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .function {
+            cursor: pointer;
+            border-radius: 7px;
+            border: rgb(204, 204, 204) 1px solid;
+        }
+        input {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
+            background-color: #F6F6F6;
+        }
+        button {
+            background-color: #163172;
+            color: #f6f6f6;
+            text-align: center;
+            justify-items: left;
+            width: 130px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #163172;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #163172;
+            color: white;
+        }
+        td {
+            background-color: #E9EDF5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="merriweather-bold"><a href="index.html">KiwiCost</a></h1>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>Progressive Tax Calculator</h2>
+            <table>
+                <tr>
+                    <th>For each dollar of income</th>
+                    <th>Tax rate</th>
+                </tr>
+                <tr>
+                    <td>Up to $14,000</td>
+                    <td>10.5%</td>
+                </tr>
+                <tr>
+                    <td>Over $14,000 and up to $48,000</td>
+                    <td>17.5%</td>
+                </tr>
+                <tr>
+                    <td>Over $48,000 and up to $70,000</td>
+                    <td>30%</td>
+                </tr>
+                <tr>
+                    <td>Over $70,000 and up to $180,000</td>
+                    <td>33%</td>
+                </tr>
+            </table>
+            <form id="taxForm">
+                <label for="income">Annual Income:</label>
+                <input class="function" type="number" id="income" name="income" required>
+                <button class="function" type="button" onclick="calculateTax()">Calculate Tax</button>
+            </form>
+            <div class="results">
+                <p id="taxAmount"></p>
+                <p id="taxResult"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateTax() {
+            const salary = parseFloat(document.getElementById('income').value);
+            let countdown = salary;
+            let tax = 0;
+            if (countdown > 180000) {
+                tax += (countdown - 180000) * 0.39;
+                countdown = 180000;
+            }
+            if (countdown > 70000) {
+                tax += (countdown - 70000) * 0.33;
+                countdown = 70000;
+            }
+            if (countdown > 48000) {
+                tax += (countdown - 48000) * 0.30;
+                countdown = 48000;
+            }
+            if (countdown > 14000) {
+                tax += (countdown - 14000) * 0.175;
+                countdown = 14000;
+            }
+            if (countdown > 0) {
+                tax += countdown * 0.105;
+            }
+            const takeHomePay = salary - tax;
+            const roundedTakeHomePay = Math.floor(takeHomePay * 100) / 100;
+
+            document.getElementById('taxAmount').textContent = `Tax: $${tax.toFixed(2)}`;
+            document.getElementById('taxResult').textContent = `Take Home Pay: $${roundedTakeHomePay.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>

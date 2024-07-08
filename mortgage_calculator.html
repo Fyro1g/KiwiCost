@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KiwiCost - Mortgage Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+    </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F6F6F6;
+        }
+        header {
+            background-color: #163172;
+            padding: 1rem 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        header h1{
+            margin: 10px;
+        }
+        header a {
+            color: #D6E4F0;
+            text-decoration: none;
+            font-size: 2.6rem;
+        }
+        .merriweather-bold {
+            font-family: "Merriweather", serif;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 2.6rem;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .section {
+            background: #D6E4F0;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #163172;
+        }
+        .section form label {
+            color: #163172;
+        }
+        .section form {
+            display: flex;
+            flex-direction: column;
+        }
+        .section form input, .section form button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .results p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .function {
+            cursor: pointer;
+            border-radius: 7px;
+            border: rgb(204, 204, 204) 1px solid;
+        }
+        input {
+            background-color: #F6F6F6;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
+        }
+        button {
+            background-color: #163172;
+            color: #f6f6f6;
+            text-align: center;
+            justify-items: left;
+            width: 170px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="merriweather-bold"><a href="index.html">KiwiCost</a></h1>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>Mortgage Calculator</h2>
+            <form id="mortgageForm">
+                <label for="homePrice">Home Price:</label>
+                <input class="function" type="number" id="homePrice" name="homePrice" required>
+                <label for="downPayment">Down Payment:</label>
+                <input class="function" type="number" id="downPayment" name="downPayment">
+                <label for="loanTerm">Loan Term (years):</label>
+                <input class="function" type="number" id="loanTerm" name="loanTerm" required>
+                <label for="interestRate">Interest Rate (%):</label>
+                <input class="function" type="number" id="interestRate" name="interestRate" step="0.01" required>
+                <button class="function" type="button" onclick="calculateMortgage()">Calculate Mortgage</button>
+            </form>
+            <div class="results">
+                <p id="monthlyPayment"></p>
+                <p id="totalPayment"></p>
+                <p id="totalInterest"></p>
+                <canvas id="amortizationChart"></canvas> <!-- Chart Canvas -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Existing calculateMortgage function with modifications to calculate amortization details
+        function calculateMortgage() {
+            // Example inputs retrieval
+            const homePrice = parseFloat(document.getElementById('homePrice').value);
+            const downPaymentInput = document.getElementById('downPayment').value;
+            const downPayment = downPaymentInput ? parseFloat(downPaymentInput) : 0; // Set to 0 if empty
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value); // in years
+            const interestRate = parseFloat(document.getElementById('interestRate').value); // annual rate
+
+            // Mortgage calculation (simplified)
+            const principal = homePrice - downPayment;
+            const numberOfPayments = loanTerm * 12; // convert years to months
+            const monthlyInterestRate = interestRate / 100 / 12; // convert annual rate to monthly and percentage to decimal
+            const monthlyPayment = principal * monthlyInterestRate / (1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments));
+
+            // Display results (example)
+            document.getElementById('monthlyPayment').innerText = `Monthly Payment: ${monthlyPayment.toFixed(2)}`;
+            document.getElementById('totalPayment').innerText = `Total Payment: ${(monthlyPayment * numberOfPayments).toFixed(2)}`;
+            document.getElementById('totalInterest').innerText = `Total Interest: ${((monthlyPayment * numberOfPayments) - principal).toFixed(2)}`;
+
+            // Calculate amortization details
+            let balance = principal;
+            let amortizationDetails = [];
+            for (let i = 0; i < numberOfPayments; i++) {
+                let interestPayment = balance * monthlyInterestRate;
+                let principalPayment = monthlyPayment - interestPayment;
+                balance -= principalPayment;
+                amortizationDetails.push({principalPayment, interestPayment, balance});
+            }
+
+            // Call function to render chart
+            renderAmortizationChart(amortizationDetails);
+        }
+
+        function renderAmortizationChart(amortizationDetails) {
+            const ctx = document.getElementById('amortizationChart').getContext('2d');
+            const labels = amortizationDetails.map((_, i) => `${i + 1}`);
+            
+            // Calculate cumulative principal and interest paid
+            let totalPrincipalPaid = 0;
+            let totalInterestPaid = 0;
+            const principalData = amortizationDetails.map(detail => {
+                totalPrincipalPaid += detail.principalPayment;
+                return totalPrincipalPaid;
+            });
+            const interestData = amortizationDetails.map(detail => {
+                totalInterestPaid += detail.interestPayment;
+                return totalInterestPaid;
+            });
+            const balanceData = amortizationDetails.map(detail => detail.balance);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Principal',
+                        data: principalData,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Interest',
+                        data: interestData,
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }, {
+                        label: 'Balance',
+                        data: balanceData,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0 // Explicitly set the minimum value for the Y-axis
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

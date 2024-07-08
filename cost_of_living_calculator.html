@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KiwiCost - Cost of Living Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+    </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6f6;
+        }
+        header {
+            background-color: #163172;
+            padding: 1rem 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        header h1 {
+            margin: 10px;
+        }
+        header a {
+            text-decoration: none;
+            font-size: 2.6rem;
+            color: #D6E4F0;
+        }
+        .merriweather-bold {
+            font-family: "Merriweather", serif;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 2.6rem;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .section {
+            background: #D6E4F0;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #163172;
+        }
+        .section form label {
+            color: #163172;
+        }
+        .section form {
+            display: flex;
+            flex-direction: column;
+        }
+        .section form input, .section form button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .results p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .function {
+            cursor: pointer;
+            border-radius: 7px;
+            border: rgb(204, 204, 204) 1px solid;
+        }
+        input {
+            background-color: #F6F6F6;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
+        }
+        button {
+            background-color: #163172;
+            color: #f6f6f6;
+            text-align: center;
+            justify-items: left;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="merriweather-bold"><a href="index.html">KiwiCost</a></h1>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>Cost of Living Calculator</h2>
+            <form id="costLivingForm">
+                <label for="weeklyRent">Weekly Rent:</label>
+                <input class="function" type="number" id="weeklyRent" name="weeklyRent">
+                <label for="utilities">Monthly Utilities:</label>
+                <input class="function" type="number" id="utilities" name="utilities">
+                <label for="groceries">Monthly Groceries:</label>
+                <input class="function" type="number" id="groceries" name="groceries">
+                <label for="transportation">Monthly Transportation:</label>
+                <input class="function" type="number" id="transportation" name="transportation">
+                <label for="monthlyLoanPayment">Monthly Loan Payment:</label>
+                <input class="function" type="number" id="monthlyLoanPayment" name="monthlyLoanPayment">
+                <label for="subscriptions">Monthly Subscriptions:</label>
+                <input class="function" type="number" id="subscriptions" name="subscriptions">
+                <button class="function" type="button" onclick="calculateCostOfLiving()">Calculate Cost of Living</button>
+            </form>
+            <div class="results">
+                <p id="monthlyCost"></p>
+                <p id="annualCost"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCostOfLiving() {
+            const weeklyRent = parseFloat(document.getElementById('weeklyRent').value) || 0;
+            const utilities = parseFloat(document.getElementById('utilities').value) || 0;
+            const groceries = parseFloat(document.getElementById('groceries').value) || 0;
+            const transportation = parseFloat(document.getElementById('transportation').value) || 0;
+            const monthlyLoanPayment = parseFloat(document.getElementById('monthlyLoanPayment').value) || 0;
+            const subscriptions = parseFloat(document.getElementById('subscriptions').value) || 0;
+
+            // Ensure the inputs are valid numbers
+            if (weeklyRent < 0 || utilities < 0 || groceries < 0 || transportation < 0 || monthlyLoanPayment < 0 || subscriptions < 0) {
+                alert("Please enter valid numbers for all fields.");
+                return;
+            }
+
+            const monthlyRent = weeklyRent * 4.33; // Approximate weeks in a month
+            const monthlyCost = monthlyRent + utilities + groceries + transportation + monthlyLoanPayment + subscriptions;
+            const annualCost = monthlyCost * 12;
+
+            document.getElementById('monthlyCost').textContent = `Monthly Cost: $${monthlyCost.toFixed(2)}`;
+            document.getElementById('annualCost').textContent = `Annual Cost: $${annualCost.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
