@@ -65,9 +65,10 @@
             padding: 10px;
             font-size: 16px;
         }
-        .results p {
+        .results {
             margin: 10px 0;
             font-size: 18px;
+            display: none; /* Hide results by default */
         }
         .function {
             cursor: pointer;
@@ -77,11 +78,11 @@
         input {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
             background-color: #F6F6F6;
-            border: 1px solid #163172;
-            border-radius: 5px; 
-            padding: 10px; 
-            outline: none; 
-            transition: border-color 0.3s ease-in-out; 
+            border: 1px solid #163172; /* Set border color to blue */
+            border-radius: 5px; /* Add border radius */
+            padding: 10px; /* Add padding */
+            outline: none; /* Remove default outline */
+            transition: border-color 0.3s ease-in-out; /* Smooth transition */
         }
         input:focus {
             border-color: #163172;
@@ -115,7 +116,7 @@
                 <input class="function" type="number" id="interestRate" name="interestRate" step="0.01" required>
                 <button class="function" type="button" onclick="calculateMortgage()">Calculate Mortgage</button>
             </form>
-            <div class="results">
+            <div class="results" id="results"> <!-- Added id for results div -->
                 <p id="monthlyPayment"></p>
                 <p id="totalPayment"></p>
                 <p id="totalInterest"></p>
@@ -128,6 +129,9 @@
         let amortizationChart;
 
         function calculateMortgage() {
+            // Show the results div when the function is called
+            document.getElementById('results').style.display = 'block';
+
             // Example inputs retrieval
             const homePrice = parseFloat(document.getElementById('homePrice').value);
             const downPaymentInput = document.getElementById('downPayment').value;
