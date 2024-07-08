@@ -116,7 +116,8 @@
     </div>
 
     <script>
-        // Existing calculateMortgage function with modifications to calculate amortization details
+        let amortizationChart;
+
         function calculateMortgage() {
             // Example inputs retrieval
             const homePrice = parseFloat(document.getElementById('homePrice').value);
@@ -152,6 +153,11 @@
 
         function renderAmortizationChart(amortizationDetails, principal) {
             const ctx = document.getElementById('amortizationChart').getContext('2d');
+
+            if (amortizationChart) {
+                amortizationChart.destroy();
+            }
+
             const labels = amortizationDetails.map((_, i) => `${i + 1}`);
             
             // Calculate cumulative principal and interest paid
@@ -167,7 +173,7 @@
             });
             const balanceData = amortizationDetails.map(detail => detail.balance);
 
-            new Chart(ctx, {
+            amortizationChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -193,7 +199,6 @@
                         y: {
                             beginAtZero: true,
                             min: 0, // Explicitly set the minimum value for the Y-axis
-                            max: principal // Explicitly set the maximum value for the Y-axis to the loan principal amount
                         }
                     },
                     plugins: {
