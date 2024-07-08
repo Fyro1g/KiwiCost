@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KiwiCost - Tax Calculator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900&display=swap');
     </style>
     <style>
         body {
@@ -59,7 +59,7 @@
             display: flex;
             flex-direction: column;
         }
-        .section form input, .section form button {
+        .section form input, .section form button, .section form .switch-container {
             margin: 10px 0;
             padding: 10px;
             font-size: 16px;
@@ -76,6 +76,15 @@
         input {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
             background-color: #F6F6F6;
+            border: 1px solid #163172;
+            border-radius: 5px; 
+            padding: 10px; 
+            outline: none; 
+            transition: border-color 0.3s ease-in-out; 
+        }
+        input:focus {
+            border-color: #163172;
+            border-width: 2px;
         }
         button {
             background-color: #163172;
@@ -102,6 +111,58 @@
         }
         td {
             background-color: #E9EDF5;
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0 !important;
+            padding: 0 !important;
+        }
+        .switch-label {
+            margin-right: 10px;
+        }
+        .switch-container input {
+            margin: 0px !important;
+        }
+        /* Custom Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #163172;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
         }
     </style>
 </head>
@@ -134,14 +195,26 @@
                     <td>Over $70,000 and up to $180,000</td>
                     <td>33%</td>
                 </tr>
+                <tr>
+                    <td>Over $180,000</td>
+                    <td>39%</td>
+                </tr>
             </table>
             <form id="taxForm">
                 <label for="income">Annual Income:</label>
                 <input class="function" type="number" id="income" name="income" required>
+                <div class="switch-container">
+                    <label class="switch-label" for="includeAcc">Include ACC (1.6%)</label>
+                    <label class="switch">
+                        <input type="checkbox" id="includeAcc" name="includeAcc">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <button class="function" type="button" onclick="calculateTax()">Calculate Tax</button>
             </form>
             <div class="results">
                 <p id="taxAmount"></p>
+                <p id="accAmount"></p>
                 <p id="taxResult"></p>
             </div>
         </div>
@@ -150,6 +223,7 @@
     <script>
         function calculateTax() {
             const salary = parseFloat(document.getElementById('income').value);
+            const includeAcc = document.getElementById('includeAcc').checked;
             let countdown = salary;
             let tax = 0;
             if (countdown > 180000) {
@@ -171,12 +245,25 @@
             if (countdown > 0) {
                 tax += countdown * 0.105;
             }
-            const takeHomePay = salary - tax;
-            const roundedTakeHomePay = Math.floor(takeHomePay * 100) / 100;
 
-            document.getElementById('taxAmount').textContent = `Tax: $${tax.toFixed(2)}`;
+            let acc = 0;
+            let takeHomePay = salary - tax;
+            if (includeAcc) {
+                acc = 0.016 * salary;
+                takeHomePay -= acc;
+            }
+            const roundedTakeHomePay = Math.floor(takeHomePay * 100) / 100;
+            const taxPercentage = (tax / salary) * 100;
+
+            document.getElementById('taxAmount').textContent = `Tax: $${tax.toFixed(2)} (${taxPercentage.toFixed(2)}%)`;
+            if (includeAcc) {
+                document.getElementById('accAmount').textContent = `ACC Levy: $${acc.toFixed(2)}`;
+            } else {
+                document.getElementById('accAmount').textContent = '';
+            }
             document.getElementById('taxResult').textContent = `Take Home Pay: $${roundedTakeHomePay.toFixed(2)}`;
         }
     </script>
 </body>
 </html>
+s
