@@ -75,8 +75,17 @@
             border: rgb(204, 204, 204) 1px solid;
         }
         input {
-            background-color: #F6F6F6;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
+            background-color: #F6F6F6;
+            border: 1px solid #163172;
+            border-radius: 5px; 
+            padding: 10px; 
+            outline: none; 
+            transition: border-color 0.3s ease-in-out; 
+        }
+        input:focus {
+            border-color: #163172;
+            border-width: 2px;
         }
         button {
             background-color: #163172;
